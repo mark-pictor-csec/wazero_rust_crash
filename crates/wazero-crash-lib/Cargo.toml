@@ -1,0 +1,9 @@
+[package]
+name = "wazero-crash-lib"
+version = "0.1.0"
+edition = "2021"
+description = "debug build crashes wazero 1.7.0, 1.7.1"
+
+[dependencies]
+aho-corasick = "1.1"
+regex = "1.10"

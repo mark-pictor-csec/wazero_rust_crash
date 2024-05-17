@@ -1,0 +1,4 @@
+[workspace]
+
+members = ["./crates/wazero-crash-lib"]
+resolver = "2"
