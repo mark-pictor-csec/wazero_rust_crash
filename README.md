@@ -1,3 +1,7 @@
+# eh?
+
+Just trying to get to the bottom of a crash in a wasm module built from rust, when run via wazero.
+
 ## quick start
 
 go run ./cmd -skipbuild
