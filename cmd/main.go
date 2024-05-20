@@ -91,9 +91,12 @@ func writeStr(mod api.Module, str string) (ptr uint64, cleanup func()) {
 	return ptr, cleanup
 }
 
+var nocleanup bool
+
 func main() {
 	release := flag.Bool("release", false, "use release build rather than debug")
 	skipBuild := flag.Bool("skipbuild", false, "skip cargo wasm (re)build")
+	flag.BoolVar(&nocleanup, "nocleanup", false, "skips dealloc's")
 	flag.Parse()
 
 	// load
@@ -116,7 +119,9 @@ func reCheck(mod api.Module, ctx context.Context, s string) {
 		log.Fatal("no such exported function regex")
 	}
 	ptr, cleanup := writeStr(mod, s)
-	defer cleanup()
+	if !nocleanup {
+		defer cleanup()
+	}
 	res, err := m.Call(ctx, ptr, uint64(len(s)))
 	if err != nil {
 		log.Fatalf("call regex(): %s", err)
@@ -130,7 +135,9 @@ func acCheck(mod api.Module, ctx context.Context, s string) {
 		log.Fatal("no such exported function ac")
 	}
 	ptr, cleanup := writeStr(mod, s)
-	defer cleanup()
+	if !nocleanup {
+		defer cleanup()
+	}
 
 	res, err := m.Call(ctx, ptr, uint64(len(s)))
 	if err != nil {
