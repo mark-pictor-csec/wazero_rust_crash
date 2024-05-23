@@ -18,28 +18,8 @@ jobs:
         include:
           # x86_64 linux
           - os: ubuntu-20.04
-            # artifact_name: linux-build-release
-            toolchain_target: x86_64-unknown-linux-gnu
-
-          # x86_64 macos
-#           - os: macos-latest
-#             # artifact_name: macos-build-release
-#             toolchain_target: x86_64-apple-darwin
-#
-#           # arm64 macOS
-#           - os: macos-latest
-#             # artifact_name: macos-arm-build-release
-#             toolchain_target: aarch64-apple-darwin
-
     steps:
       - uses: actions/checkout@v4
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@master
-        with:
-          toolchain: stable
-          targets: ${{ matrix.toolchain_target }} wasm32-wasi
-      - name: Rust Cache
-        uses: Swatinem/rust-cache@v2
       - name: install Go
         uses: actions/setup-go@v5
         with:
@@ -49,25 +29,9 @@ jobs:
       - name: build go runner
         run: go build -o runner ./cmd
 
-      - name: build native release
-        run: cargo build --release --target ${{ matrix.toolchain_target }}
-      - name: build native debug
-        run: cargo build  --target ${{ matrix.toolchain_target }}
-
-      - name: build wasm release
-        run: cargo build --release --target wasm32-wasi
-      - name: build wasm debug
-        run: cargo build  --target wasm32-wasi
-
-      - name: run native release
-        run: ./target/${{ matrix.toolchain_target }}/release/wazero-crash-lib
-      - name: run native debug
-        run: ./target/${{ matrix.toolchain_target }}/debug/wazero-crash-lib
-
-      - name: run wasm release
-        run: ./runner -release -skipbuild
-      - name: run wasm debug
-        run: ./runner -skipbuild
-      - name: show files
-        run: |
-          ls target/${{ matrix.toolchain_target }}/release/ target/${{ matrix.toolchain_target }}/debug/ target/wasm32-wasi/release/ target/wasm32-wasi/debug/
+      - name: run interpreted, with extra memory
+        run: ./runner -release -interp
+      - name: run compiled, without extra memory
+        run: ./runner -release -nomem
+      - name: run compiled, with extra memory (crashes)
+        run: ./runner -release

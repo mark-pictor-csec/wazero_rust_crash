@@ -3,14 +3,25 @@
 Just trying to get to the bottom of a crash in a wasm module built from rust, when run via wazero.
 
 ## quick start
+```sh
+go run ./cmd -release
+```
+ - wasm is compiled, and additional memory is alloc'd for wasm
+ - wasm func exits with `unreachable` error and stack trace
 
-go run ./cmd -skipbuild
-  - wasm crashes when regex() func called
-
-go run ./cmd -release -skipbuild
-  - no crash
+```sh
+go run ./cmd -release -interp
+```
+ - interpreted rather than compiled
+ - wasm func is successful
+```sh
+go run ./cmd -release -nomem
+```
+ - no extra memory is allocated
+ - wasm func is successful
 
 ## versions
+```
 
 ```
 $ rustc --version
